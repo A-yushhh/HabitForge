@@ -3,4 +3,4 @@ app=FastAPI()
 
 @app.get("/")
 def home():
-    return {"message": "Hello, HabitForge!"}
+    return {"message": "Hello, GANDEDH!"}
