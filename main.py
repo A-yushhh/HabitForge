@@ -21,3 +21,4 @@ def root():
     return {
         "message": "HabitForge API is running."
     }
+
