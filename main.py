@@ -7,6 +7,11 @@ from app.api.habits import router
 from app.database.database import engine
 
 
+from app.api.users import router as user_router
+
+
+
+
 @asynccontextmanager
 async def lifespan(app):
     with engine.connect() as connection:
@@ -24,6 +29,8 @@ app = FastAPI(
 )
 
 app.include_router(router)
+
+app.include_router(user_router)
 
 
 @app.get("/")
