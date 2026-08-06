@@ -4,12 +4,10 @@ from fastapi import FastAPI
 from sqlalchemy import text
 
 from app.api.habits import router
-from app.database.database import engine
-
-
 from app.api.users import router as user_router
+from app.api.auth import router as auth_router
 
-
+from app.database.database import engine
 
 
 @asynccontextmanager
@@ -29,8 +27,8 @@ app = FastAPI(
 )
 
 app.include_router(router)
-
 app.include_router(user_router)
+app.include_router(auth_router)
 
 
 @app.get("/")
