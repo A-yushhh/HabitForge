@@ -1,9 +1,10 @@
 from pwdlib import PasswordHash
 
 from datetime import datetime, timedelta, UTC
-from jose import jwt
+from jose import jwt, JWTError
 from app.core.config import settings
 from app.models.user import User
+from fastapi.security import OAuth2PasswordBearer
 
 password_hasher = PasswordHash.recommended()
 
@@ -25,10 +26,22 @@ def create_access_token(user: User) -> str:
     "exp": datetime.now(UTC) + timedelta(minutes=30),
     }
 
-    token=jwt.encode(
+    token = jwt.encode(
         payload,
         settings.SECRET_KEY,
         algorithm="HS256"
     )
     return token
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=["HS256"],
+        )
+        return payload
+    except JWTError:
+        return None
