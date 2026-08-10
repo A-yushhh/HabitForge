@@ -42,3 +42,8 @@ class User(Base):
         onupdate=func.now(),
         nullable=False,
     )
+
+    is_active: Mapped[bool] = mapped_column(
+        default=True,
+        nullable=False,
+    )
