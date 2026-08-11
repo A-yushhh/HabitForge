@@ -2,9 +2,12 @@ from datetime import datetime
 
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy.orm import relationship
 from app.database.database import Base
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from app.models.habit import Habit
 
 class User(Base):
     __tablename__ = "users"
@@ -46,4 +49,9 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(
         default=True,
         nullable=False,
+    )
+
+    habits: Mapped[list["Habit"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
