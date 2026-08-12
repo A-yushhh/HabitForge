@@ -8,7 +8,7 @@ from alembic import context
 
 from app.core.config import settings
 from app.database.database import Base
-from app.models.user import User
+from app.models.habit.user import User
 from app.models.habit import Habit
 from app.models.habit_log import HabitLog
 

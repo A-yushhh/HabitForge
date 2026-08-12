@@ -4,7 +4,7 @@ from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import sqlalchemy as sa
 from app.database.database import Base
-from app.models.user import User
+from app.models.habit.user import User
 from app.models.habit_log import HabitLog
 
 

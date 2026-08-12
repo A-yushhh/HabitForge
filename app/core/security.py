@@ -3,7 +3,7 @@ from pwdlib import PasswordHash
 from datetime import datetime, timedelta, UTC
 from jose import jwt, JWTError
 from app.core.config import settings
-from app.models.user import User
+from app.models.habit.user import User
 from fastapi.security import OAuth2PasswordBearer
 
 password_hasher = PasswordHash.recommended()
