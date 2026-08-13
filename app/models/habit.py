@@ -6,12 +6,9 @@ import sqlalchemy as sa
 from app.database.database import Base
 
 from typing import TYPE_CHECKING
-
+from app.models.habit_log import HabitLog
 if TYPE_CHECKING:
     from app.models.user import User
-    from app.models.habit_log import HabitLog
-
-
 
 class Habit(Base):
     __tablename__ = "habits"

@@ -6,7 +6,6 @@ from sqlalchemy import text
 from app.api.habits import router
 from app.api.users import router as user_router
 from app.api.auth import router as auth_router
-
 from app.database.database import engine
 
 
