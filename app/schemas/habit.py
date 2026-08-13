@@ -15,11 +15,3 @@ class HabitCreate(BaseModel):
     description: str | None = None
     color: str | None = None
 
-    user: Mapped["User"] = relationship(
-        back_populates="habits",
-    )
-
-    logs: Mapped[list["HabitLog"]] = relationship(
-    back_populates="habit",
-    cascade="all, delete-orphan",
-)

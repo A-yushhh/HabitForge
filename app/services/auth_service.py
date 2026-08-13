@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import decode_access_token, oauth2_scheme 
 from app.database.database import get_db
-from app.models.habit.user import User
+from app.models.user import User
 from app.schemas.user import UserLogin
 from app.core.security import verify_password
 
