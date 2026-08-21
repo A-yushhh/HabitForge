@@ -10,22 +10,18 @@ if TYPE_CHECKING:
 
 class HabitLog(Base):
     __tablename__ = "habit_logs"
-
     id: Mapped[int] = mapped_column(primary_key=True)
-
     habit_id: Mapped[int] = mapped_column(
         ForeignKey("habits.id"),
         nullable=False,
         index=True,
     )
-
     completed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
         index=True,
     )
-
     habit: Mapped["Habit"] = relationship(
         back_populates="logs",
     )
