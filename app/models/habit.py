@@ -34,9 +34,10 @@ class Habit(Base):
         sa.JSON,
         nullable=False,
     )
-    color: Mapped[str | None] = mapped_column(
-        String(7),
-        nullable=True,
+    priority: Mapped[str] = mapped_column(
+    String(10),
+    nullable=False,
+    default="medium",
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
