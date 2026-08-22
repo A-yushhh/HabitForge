@@ -2,7 +2,7 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
+from fastapi import HTTPException
 from app.core.security import decode_access_token, oauth2_scheme 
 from app.database.database import get_db
 from app.models.user import User
@@ -30,7 +30,6 @@ def get_current_user(
     db: Session = Depends(get_db),
 ):
     payload = decode_access_token(token)
-
     if payload is None:
         return None
 
@@ -42,5 +41,10 @@ def get_current_user(
     if user is None:
         return None
     
+    if user is None:
+        raise HTTPException(
+        status_code=401,
+        detail="Invalid authentication credentials",
+    )
     return user
 
