@@ -7,6 +7,7 @@ from app.services.auth_service import get_current_user
 from app.models.habit import Habit
 from app.models.habit_log import HabitLog
 from app.services.streak_service import get_habit_streak
+from app.schemas.streak import StreakResponse
 
 router = APIRouter()
 
@@ -126,7 +127,10 @@ def update_habit(
 
     return habit
 
-@router.get("/habits/{habit_id}/streak")
+@router.get(
+    "/habits/{habit_id}/streak",
+    response_model=StreakResponse,
+)
 def get_streak(
     habit_id: int,
     db: Session = Depends(get_db),
@@ -143,16 +147,12 @@ def get_streak(
             status_code=404,
             detail="Habit not found",
         )
-
     streak = get_habit_streak(
         habit_id=habit_id,
         db=db,
     )
 
-    return {
-        "habit_id": habit_id,
-        "current_streak": streak,
-    }
+    return get_habit_streak(habit_id, db)
 
 @router.patch("/habits/{habit_id}")
 def update_habit(
