@@ -151,9 +151,12 @@ def get_streak(
         habit_id=habit_id,
         db=db,
     )
+    return {
+        "habit_id": habit_id,
+        **streak,
+    }
 
-    return get_habit_streak(habit_id, db)
-
+    
 @router.patch("/habits/{habit_id}")
 def update_habit(
     habit_id: int,

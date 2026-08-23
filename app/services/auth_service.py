@@ -9,6 +9,7 @@ from app.models.user import User
 from app.schemas.user import UserLogin
 from app.core.security import verify_password
 
+
 def authenticate_user(
     db: Session,
     login_data: UserLogin,
@@ -25,22 +26,21 @@ def authenticate_user(
         return None
     return user
 
+
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ):
     payload = decode_access_token(token)
     if payload is None:
-        return None
-
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid authentication credentials",
+        )
     user_id = payload["sub"]
-
     user = db.scalar(
         select(User).where(User.id == int(user_id))
     )
-    if user is None:
-        return None
-    
     if user is None:
         raise HTTPException(
         status_code=401,
