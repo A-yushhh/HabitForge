@@ -7,7 +7,7 @@ from app.models.habit_log import HabitLog
 def calculate_streaks(
     completion_dates: list[date],
     today: date,
-) -> dict:
+) -> dict[str,int]:
     if not completion_dates:
         return {
             "current_streak": 0,
