@@ -152,8 +152,8 @@ def get_streak(
         db=db,
     )
     return {
-    "habit_id": habit_id,
-    **streak,
+        "habit_id": habit_id,
+        **streak,
     }
 
     
