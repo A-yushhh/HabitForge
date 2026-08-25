@@ -8,7 +8,8 @@ from app.models.habit import Habit
 from app.models.habit_log import HabitLog
 from app.services.streak_service import get_habit_streak
 from app.schemas.streak import StreakResponse
-
+from datetime import date
+from sqlalchemy import select, func
 router = APIRouter()
 
 
@@ -61,7 +62,19 @@ def complete_habit(
             status_code=404,
             detail="Habit not found",
         )
+    
+    existing_log = db.scalar(
+    select(HabitLog).where(
+        HabitLog.habit_id == habit.id,
+        func.date(HabitLog.completed_at) == date.today(),
+        )
+    )
 
+    if existing_log is not None:
+        raise HTTPException(
+            status_code=400,
+            detail="Habit already completed today",
+        )
     log = HabitLog(habit_id=habit.id)
 
     db.add(log)
