@@ -34,6 +34,7 @@ def create_user(db: Session, user_data: UserCreate) -> User:
         username=user_data.username,
         email=user_data.email,
         password_hash=hash_password(user_data.password),
+        timezone=user_data.timezone,
     )
 
     db.add(user)

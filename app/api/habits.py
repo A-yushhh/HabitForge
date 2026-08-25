@@ -10,6 +10,9 @@ from app.services.streak_service import get_habit_streak
 from app.schemas.streak import StreakResponse
 from datetime import date
 from sqlalchemy import select, func
+from app.utils.timezone import to_user_timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 router = APIRouter()
 
 
@@ -63,13 +66,20 @@ def complete_habit(
             detail="Habit not found",
         )
     
-    existing_log = db.scalar(
-    select(HabitLog).where(
-        HabitLog.habit_id == habit.id,
-        func.date(HabitLog.completed_at) == date.today(),
+    today = datetime.now(ZoneInfo(current_user.timezone)).date()
+
+    local_completed_date = func.date(
+        HabitLog.completed_at.op("AT TIME ZONE")(
+            current_user.timezone
         )
     )
 
+    existing_log = db.scalar(
+        select(HabitLog).where(
+            HabitLog.habit_id == habit.id,
+            local_completed_date == today,
+        )
+    )
     if existing_log is not None:
         raise HTTPException(
             status_code=400,
