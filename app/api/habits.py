@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select
 from app.database.database import get_db
 from app.schemas.habit import HabitCreate, HabitUpdate
 from app.services.auth_service import get_current_user
@@ -10,9 +9,10 @@ from app.services.streak_service import get_habit_streak
 from app.schemas.streak import StreakResponse
 from datetime import date
 from sqlalchemy import select, func
-from app.utils.timezone import to_user_timezone
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from app.schemas.stats import StatsResponse
+
 router = APIRouter()
 
 
@@ -46,6 +46,8 @@ def create_habit(
     db.refresh(new_habit)
 
     return new_habit
+
+
 
 @router.post("/habits/{habit_id}/logs")
 def complete_habit(
@@ -120,35 +122,49 @@ def get_habit_logs(
 
     return logs
 
-@router.put("/habits/{habit_id}")
-def update_habit(
-    habit_id: int,
-    habit_data: HabitUpdate,
+@router.get("/habits/stats",response_model=StatsResponse,)
+def get_habit_stats(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user=Depends(get_current_user),
 ):
-    habit = db.scalar(
-        select(Habit).where(
-            Habit.id == habit_id,
+    total_habits = db.scalar(
+        select(func.count(Habit.id)).where(
             Habit.user_id == current_user.id,
         )
     )
-
-    if habit is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Habit not found",
+    today=datetime.now(ZoneInfo(current_user.timezone)).date()
+    local_completed_date = func.date(
+        HabitLog.completed_at.op("AT TIME ZONE")(current_user.timezone)
+    )
+    completed_today = db.scalar(
+        select(func.count(HabitLog.id))
+        .join(Habit, Habit.id == HabitLog.habit_id)
+        .where(
+            Habit.user_id == current_user.id,
+            local_completed_date == today,
         )
+    )
+    habits = db.scalars(
+        select(Habit).where(
+            Habit.user_id == current_user.id,
+        )
+    ).all()
+    best_streak = 0
+    for habit in habits:
+        streak = get_habit_streak(
+            habit_id=habit.id,
+            db=db,
+        )
+        best_streak = max(
+            best_streak,
+            streak["longest_streak"],
+        )
+    return {
+        "total_habits": total_habits or 0,
+        "completed_today": completed_today or 0,
+        "best_streak": best_streak or 0,
+    }
 
-    update_data = habit_data.model_dump(exclude_unset=True)
-
-    for field, value in update_data.items():
-        setattr(habit, field, value)
-
-    db.commit()
-    db.refresh(habit)
-
-    return habit
 
 @router.get(
     "/habits/{habit_id}/streak",
